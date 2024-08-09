@@ -1,0 +1,6 @@
+{
+    "parent": "hoontersarmory:item/sonic_crossbow",
+    "textures": {
+        "layer0": "hoontersarmory:item/sonic_crossbow_charged"
+    }
+}

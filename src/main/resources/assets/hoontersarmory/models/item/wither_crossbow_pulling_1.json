@@ -1,0 +1,6 @@
+{
+  "parent": "hoontersarmory:item/wither_crossbow",
+  "textures": {
+    "layer0": "hoontersarmory:item/wither_crossbow_pulling_1"
+  }
+}
