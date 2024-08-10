@@ -11,7 +11,6 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.Level;
 
@@ -20,9 +19,6 @@ import java.util.UUID;
 
 
 public class NecromancerSword extends SwordItem {
-    public NecromancerSword(Tier pTier, Properties pProperties) {
-        super(pTier, pProperties);
-    }
 
     public NecromancerSword(Properties pProperties) {
         super(Tiers.IRON, pProperties);
@@ -58,7 +54,6 @@ public class NecromancerSword extends SwordItem {
 
             return constructor.newInstance(mob.getType(), level);
         } catch (Exception e) {
-            e.printStackTrace();
             return new Zombie(EntityType.ZOMBIE, level);
         }
     }
