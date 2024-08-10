@@ -85,20 +85,9 @@ public class NecromancerSword extends SwordItem {
     }
 
     public static void copyEquipment(Mob oldMob, Mob newMob) {
-        // Copy main hand item (e.g., weapons)
-        ItemStack mainHandItem = oldMob.getItemBySlot(EquipmentSlot.MAINHAND);
-        newMob.setItemSlot(EquipmentSlot.MAINHAND, mainHandItem.copy());
-
-        // Copy offhand item (e.g., shields)
-        ItemStack offHandItem = oldMob.getItemBySlot(EquipmentSlot.OFFHAND);
-        newMob.setItemSlot(EquipmentSlot.OFFHAND, offHandItem.copy());
-
-        // Copy armor slots (helmet, chestplate, leggings, boots)
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
-                ItemStack armorItem = oldMob.getItemBySlot(slot);
-                newMob.setItemSlot(slot, armorItem.copy());
-            }
+            ItemStack armorItem = oldMob.getItemBySlot(slot);
+            newMob.setItemSlot(slot, armorItem.copy());
         }
     }
 
