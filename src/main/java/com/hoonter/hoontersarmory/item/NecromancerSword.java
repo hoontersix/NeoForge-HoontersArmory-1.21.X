@@ -5,7 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Zombie;
@@ -76,9 +75,6 @@ public class NecromancerSword extends SwordItem {
                 )
         );
         mob.targetSelector.addGoal(2, new SummonerHurtTargetGoal(mob));
-        mob.goalSelector.getAvailableGoals().removeIf(prioritizedGoal ->
-                prioritizedGoal.getGoal() instanceof LookAtPlayerGoal
-        );
     }
 
     public static void setAttributes(Mob deadMob, Mob mob, int lifeTime) {
