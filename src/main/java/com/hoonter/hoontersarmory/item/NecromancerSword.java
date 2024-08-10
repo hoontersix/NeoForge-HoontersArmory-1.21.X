@@ -9,7 +9,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.Level;
@@ -27,23 +26,21 @@ public class NecromancerSword extends SwordItem {
 
     public static void summonEntity(Entity deadEntity, Player player) {
         Level level = player.level();
-        if (!level.isClientSide()) {
-            if (deadEntity instanceof Mob deadMob) {
-                Mob mob = getNewMob(deadMob, level);
-                int lifeTime = 200;
-                // Store data
-                storeData(mob, player, lifeTime);
-                // Add goals
-                addGoals(mob);
-                // Mob attributes, effects and spawn
-                setAttributes(deadMob, mob, lifeTime);
-                level.addFreshEntity(mob);
-                // Spawn lightning
-                LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-                lightningBolt.setVisualOnly(true);
-                lightningBolt.setPos(deadEntity.getPosition(0));
-                level.addFreshEntity(lightningBolt);
-            }
+        if (deadEntity instanceof Mob deadMob) {
+            Mob mob = getNewMob(deadMob, level);
+            int lifeTime = 200;
+            // Store data
+            storeData(mob, player, lifeTime);
+            // Add goals
+            addGoals(mob);
+            // Mob attributes, effects and spawn
+            setAttributes(deadMob, mob, lifeTime);
+            level.addFreshEntity(mob);
+            // Spawn lightning
+            LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
+            lightningBolt.setVisualOnly(true);
+            lightningBolt.setPos(deadEntity.getPosition(0));
+            level.addFreshEntity(lightningBolt);
         }
     }
 
@@ -79,19 +76,15 @@ public class NecromancerSword extends SwordItem {
         mob.targetSelector.addGoal(2, new SummonerHurtTargetGoal(mob));
     }
 
-    public static void copyEquipment(Mob oldMob, Mob newMob) {
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack armorItem = oldMob.getItemBySlot(slot);
-            newMob.setItemSlot(slot, armorItem.copy());
-        }
-    }
-
     public static void setAttributes(Mob deadMob, Mob mob, int lifeTime) {
+        // Copy data
+        CompoundTag compoundTag = new CompoundTag();
+        deadMob.addAdditionalSaveData(compoundTag);
+        mob.readAdditionalSaveData(compoundTag);
+        // Position, health and effect
         mob.setPos(deadMob.getPosition(0));
-        mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, lifeTime, 1));
         mob.setHealth(mob.getMaxHealth());
-        copyEquipment(deadMob, mob);
-        if (deadMob.isBaby()) { mob.setBaby(true); }
+        mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, lifeTime, 1));
     }
 
     public static void storeData(Mob mob, Player owner, int lifeTime) {
