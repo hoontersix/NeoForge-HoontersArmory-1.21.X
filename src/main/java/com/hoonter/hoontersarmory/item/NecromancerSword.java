@@ -28,7 +28,13 @@ public class NecromancerSword extends SwordItem {
         Level level = player.level();
         if (!level.isClientSide()) {
             if (deadEntity instanceof Mob deadMob) {
-                Mob mob = getNewMob(deadMob, level);
+                Mob mob;
+                if (deadMob.goalSelector.getAvailableGoals().isEmpty()) {
+                    mob = getNewMob(new Zombie(EntityType.ZOMBIE, level), level);
+                }
+                else {
+                    mob = getNewMob(deadMob, level);
+                }
                 int lifeTime = 200;
                 // Store data
                 storeData(mob, player, lifeTime);
