@@ -19,7 +19,7 @@ import java.util.UUID;
 
 
 @EventBusSubscriber
-public class EventHandler {
+public class SummonedHandler {
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
