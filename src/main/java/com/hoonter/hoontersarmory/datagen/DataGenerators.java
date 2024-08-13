@@ -12,7 +12,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import java.util.concurrent.CompletableFuture;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = HoontersArmory.MODID)
-public class DataGenerator {
+public class DataGenerators {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         net.minecraft.data.DataGenerator generator = event.getGenerator();
@@ -24,5 +24,8 @@ public class DataGenerator {
                 event.includeClient(),
                 new ModItemModelProvider(packOutput, existingFileHelper)
         );
+        ModBlockTagsProvider blockTagsProvider = generator.addProvider(event.includeServer(),
+                new ModBlockTagsProvider(packOutput, lookUpProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(), new ModItemTagsProvider(packOutput, lookUpProvider, blockTagsProvider.contentsGetter()));
     }
 }
