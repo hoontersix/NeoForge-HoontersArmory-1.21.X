@@ -83,9 +83,8 @@ public class NecromancerSword extends SwordItem {
     }
 
     private static void storeData(Mob mob, Player owner, int lifeTime) {
-        CompoundTag mobData = mob.getPersistentData();
-        mobData.putUUID("OwnerUUID", owner.getUUID());
-        mobData.putInt("LifeTime", lifeTime);
+        CompoundTag summonData = mob.getPersistentData();
+        summonData.putUUID("OwnerUUID", owner.getUUID());
+        summonData.putInt("LifeTime", lifeTime);
     }
-
 }
