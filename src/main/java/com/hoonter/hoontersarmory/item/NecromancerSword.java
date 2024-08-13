@@ -6,9 +6,12 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.Level;
@@ -29,19 +32,15 @@ public class NecromancerSword extends SwordItem {
         if (!level.isClientSide()) {
             if (deadEntity instanceof Mob deadMob) {
                 Mob mob;
-                if (deadMob.goalSelector.getAvailableGoals().isEmpty()) {
-                    mob = getNewMob(new Zombie(EntityType.ZOMBIE, level), level);
-                }
-                else {
-                    mob = getNewMob(deadMob, level);
-                }
+                mob = new Zombie(EntityType.ZOMBIE, level);
                 int lifeTime = 200;
                 // Store data
                 storeData(mob, player, lifeTime);
                 // Add goals
                 addGoals(mob);
-                // Mob attributes, effects and spawn
+                // Mob attributes, effects, equipment and spawn
                 setAttributes(deadMob, mob, lifeTime);
+                copyEquipment(deadMob, mob);
                 level.addFreshEntity(mob);
                 // Spawn lightning
                 LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
@@ -52,18 +51,7 @@ public class NecromancerSword extends SwordItem {
         }
     }
 
-    public static Mob getNewMob(Mob mob, Level level) {
-        try {
-            Class<? extends Mob> mobClass = mob.getClass();
-            Constructor<? extends Mob> constructor = mobClass.getConstructor(EntityType.class, Level.class);
-
-            return constructor.newInstance(mob.getType(), level);
-        } catch (Exception e) {
-            return new Zombie(EntityType.ZOMBIE, level);
-        }
-    }
-
-    public static void addGoals(Mob mob) {
+    private static void addGoals(Mob mob) {
         mob.targetSelector.removeAllGoals(goal -> true);
         mob.targetSelector.addGoal(
                 3, new NearestAttackableTargetGoal<>(mob, Mob.class, 5, false, false,
@@ -83,18 +71,21 @@ public class NecromancerSword extends SwordItem {
         mob.targetSelector.addGoal(2, new SummonerHurtTargetGoal(mob));
     }
 
-    public static void setAttributes(Mob deadMob, Mob mob, int lifeTime) {
-        // Copy data
-        CompoundTag compoundTag = new CompoundTag();
-        deadMob.addAdditionalSaveData(compoundTag);
-        mob.readAdditionalSaveData(compoundTag);
+    private static void setAttributes(Mob deadMob, Mob mob, int lifeTime) {
         // Position, health and effect
         mob.setPos(deadMob.getPosition(0));
         mob.setHealth(mob.getMaxHealth());
         mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, lifeTime, 1));
     }
 
-    public static void storeData(Mob mob, Player owner, int lifeTime) {
+    private static void copyEquipment(Mob oldMob, Mob newMob) {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack item = oldMob.getItemBySlot(slot);
+            newMob.setItemSlot(slot, item.copy());
+        }
+    }
+
+    private static void storeData(Mob mob, Player owner, int lifeTime) {
         CompoundTag mobData = mob.getPersistentData();
         mobData.putUUID("OwnerUUID", owner.getUUID());
         mobData.putInt("LifeTime", lifeTime);
